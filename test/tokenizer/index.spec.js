@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { scanToken } from '../../src';
+import { scanToken } from '../../src/tokenizer';
 
 
 /* eslint prefer-arrow-callback: 0 */

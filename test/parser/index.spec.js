@@ -1,14 +1,14 @@
 import { expect } from 'chai';
-import { parse } from '../../src';
+import { parse } from '../../src/parser';
 
 /* eslint prefer-arrow-callback: 0 */
-describe.skip('parser', function () {
+describe('parser', function () {
   it('parse select statement', function () {
     const actual = parse('SELECT * FROM mytable');
     const expected = {
-      type: 'SelectStatement',
+      type: 'QueryStatement',
       start: 0,
-      end: 21,
+      end: 20,
       body: [ // nodes
         {
           type: 'Select',
@@ -16,18 +16,18 @@ describe.skip('parser', function () {
             { type: 'Column', name: '*' },
           ],
           from: 'mytable',
-          endStatement: ';',
+          // endStatement: ';',
         },
       ],
       tokens: [
-        { type: 'keyword', value: 'SELECT', start: 0, end: 6 },
-        { type: 'whitespace', value: ' ', start: 7, end: 8 },
-        { type: 'asterisk', value: '*', start: 0, end: 6 },
-        { type: 'whitespace', value: ' ', start: 0, end: 6 },
-        { type: 'keyword', value: 'FROM', start: 0, end: 6 },
-        { type: 'whitespace', value: ' ', start: 0, end: 6 },
-        { type: 'table', value: 'mytable', start: 0, end: 6 },
-        { type: 'semicolon', value: ';', start: 0, end: 6 },
+        { type: 'keyword', value: 'SELECT', start: 0, end: 5 },
+        { type: 'whitespace', value: ' ', start: 6, end: 6 },
+        { type: 'asterisk', value: '*', start: 7, end: 7 },
+        { type: 'whitespace', value: ' ', start: 8, end: 8 },
+        { type: 'keyword', value: 'FROM', start: 9, end: 12 },
+        { type: 'whitespace', value: ' ', start: 13, end: 13 },
+        { type: 'identifier', value: 'mytable', start: 14, end: 20 },
+        // { type: 'semicolon', value: ';', start: 21, end: 21 },
       ],
     };
 
