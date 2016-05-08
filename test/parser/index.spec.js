@@ -34,7 +34,36 @@ describe('parser', function () {
     expect(actual).to.eql(expected);
   });
 
-  it('parse select statement with 2 columns', function () {
+  it('parse select statement with single column', function () {
+    const actual = parse('SELECT id FROM people');
+    const expected = {
+      type: 'QueryStatement',
+      start: 0,
+      end: 20,
+      body: [ // nodes
+        {
+          type: 'Select',
+          columns: [
+            { type: 'Column', name: 'id' },
+          ],
+          from: 'people',
+        },
+      ],
+      tokens: [
+        { type: 'keyword', value: 'SELECT', start: 0, end: 5 },
+        { type: 'whitespace', value: ' ', start: 6, end: 6 },
+        { type: 'identifier', value: 'id', start: 7, end: 8 },
+        { type: 'whitespace', value: ' ', start: 9, end: 9 },
+        { type: 'keyword', value: 'FROM', start: 10, end: 13 },
+        { type: 'whitespace', value: ' ', start: 14, end: 14 },
+        { type: 'identifier', value: 'people', start: 15, end: 20 },
+      ],
+    };
+
+    expect(actual).to.eql(expected);
+  });
+
+  it('parse select statement with multiple columns', function () {
     const actual = parse('SELECT id, name FROM people');
     const expected = {
       type: 'QueryStatement',
