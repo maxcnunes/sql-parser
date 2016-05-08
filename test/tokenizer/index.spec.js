@@ -76,4 +76,15 @@ describe('scan', function () {
     };
     expect(actual).to.eql(expected);
   });
+
+  it('scans , individual identifier', function () {
+    const actual = scanToken(initState(','));
+    const expected = {
+      type: 'comma',
+      value: ',',
+      start: 0,
+      end: 0,
+    };
+    expect(actual).to.eql(expected);
+  });
 });

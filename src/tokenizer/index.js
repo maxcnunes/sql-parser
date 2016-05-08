@@ -12,6 +12,7 @@ const KEYWORDS = [
 const INDIVIDUALS = {
   '*': 'asterisk',
   ';': 'semicolon',
+  ',': 'comma',
 };
 
 

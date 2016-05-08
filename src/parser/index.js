@@ -151,7 +151,7 @@ function createSelectStatementParser () {
     },
 
     addToken (token) {
-      if (token.type === 'whitespace') {
+      if (token.type === 'whitespace' || token.type === 'comma') {
         prevToken = token;
         return;
       }
