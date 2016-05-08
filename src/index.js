@@ -36,7 +36,6 @@ export function parse (input) {
  * Tokenizer
  */
 export function scanToken (state) {
-  state.value = '';
   const ch = read(state);
   debugToken(state, ch);
 
