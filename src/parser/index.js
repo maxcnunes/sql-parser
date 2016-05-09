@@ -15,22 +15,54 @@ export function parse (input) {
   };
 
   let prevState = topLevelState;
-  const statementParser = createSelectStatementParser();
+  let statementParser;
 
   while (prevState.position < topLevelState.end) {
     const tokenState = initState({ prevState });
     const token = scanToken(tokenState);
-    console.log('>>>\nscanToken', token);
+    // console.log('>>>\nscanToken', token);
+
+    if (!statementParser) {
+      // ignore white spaces between statements
+      if (token.type === 'whitespace') {
+        topLevelStatement.tokens.push(token);
+        prevState = tokenState;
+        continue;
+      }
+
+      statementParser = createStatementParserByToken(token);
+    }
+
     statementParser.addToken(token);
     topLevelStatement.tokens.push(token);
     prevState = tokenState;
+
+    const statement = statementParser.getStatement();
+    if (statement.endStatement) {
+      topLevelStatement.body.push(statement);
+      statementParser = null;
+    }
   }
 
-  topLevelStatement.body.push(statementParser.getStatement());
+  // last statement without ending key
+  if (statementParser) {
+    const statement = statementParser.getStatement();
+    if (!statement.endStatement) {
+      topLevelStatement.body.push(statement);
+    }
+  }
 
   return topLevelStatement;
 }
 
+
+function createStatementParserByToken (token) {
+  if (token.type === 'keyword' && token.value === 'SELECT') {
+    return createSelectStatementParser();
+  }
+
+  throw new Error('Invalid statement parser');
+}
 
 function initState ({ input, prevState }) {
   if (prevState) {
