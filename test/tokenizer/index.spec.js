@@ -87,4 +87,37 @@ describe('scan', function () {
     };
     expect(actual).to.eql(expected);
   });
+
+  it('scans WHERE keyword', function () {
+    const actual = scanToken(initState('WHERE'));
+    const expected = {
+      type: 'keyword',
+      value: 'WHERE',
+      start: 0,
+      end: 4,
+    };
+    expect(actual).to.eql(expected);
+  });
+
+  it('scans = individual identifier', function () {
+    const actual = scanToken(initState('='));
+    const expected = {
+      type: 'operator',
+      value: '=',
+      start: 0,
+      end: 0,
+    };
+    expect(actual).to.eql(expected);
+  });
+
+  it('scans 10 as number identifier', function () {
+    const actual = scanToken(initState('10'));
+    const expected = {
+      type: 'number',
+      value: '10',
+      start: 0,
+      end: 1,
+    };
+    expect(actual).to.eql(expected);
+  });
 });

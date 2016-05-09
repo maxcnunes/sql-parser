@@ -6,6 +6,7 @@
 const KEYWORDS = [
   'SELECT',
   'FROM',
+  'WHERE',
 ];
 
 
@@ -13,6 +14,7 @@ const INDIVIDUALS = {
   '*': 'asterisk',
   ';': 'semicolon',
   ',': 'comma',
+  '=': 'operator',
 };
 
 
@@ -28,6 +30,10 @@ export function scanToken (state) {
 
   if (isWhitespace(ch)) {
     return scanWhitespace(state);
+  }
+
+  if (isNumber(ch)) {
+    return scanNumber(state);
   }
 
   if (isLetter(ch)) {
@@ -111,6 +117,27 @@ function scanWord (state) {
 }
 
 
+function scanNumber (state) {
+  let nextChar = read(state);
+
+  while (isNumber(nextChar)) {
+    nextChar = read(state);
+  }
+
+  if (!isNumber(nextChar)) {
+    unread(state);
+  }
+
+  const value = state.input.slice(state.start, state.position + 1);
+  return {
+    type: 'number',
+    value,
+    start: state.start,
+    end: state.start + value.length - 1,
+  };
+}
+
+
 function scanIndividualCharacter (state) {
   const value = state.input.slice(state.start, state.position + 1);
   const type = resolveIndividualTokenType(value);
@@ -145,6 +172,10 @@ function isWhitespace (ch) {
 function isLetter (ch) {
   return (ch >= 'a' && ch <= 'z')
       || (ch >= 'A' && ch <= 'Z');
+}
+
+function isNumber (ch) {
+  return ch >= '0' && ch <= '9';
 }
 
 

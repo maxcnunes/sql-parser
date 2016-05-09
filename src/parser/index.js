@@ -152,6 +152,63 @@ function createSelectStatementParser () {
       },
       postCanGoToNext: () => true,
     },
+    // Where keyword
+    {
+      preCanGoToNext: () => false,
+      validation: {
+        requireBefore: ['whitespace'],
+        acceptTokens: [
+          { type: 'keyword', value: 'WHERE' },
+        ],
+      },
+      add: () => {},
+      postCanGoToNext: () => true,
+    },
+    // Where left
+    {
+      preCanGoToNext: () => false,
+      validation: {
+        requireBefore: ['whitespace', 'comma'],
+        acceptTokens: [
+          { type: 'identifier' },
+        ],
+      },
+      add: (token) => {
+        if (!statement.where) {
+          statement.where = [];
+        }
+        statement.where.push({ type: 'operator', left: token.value });
+      },
+      postCanGoToNext: () => true,
+    },
+    // Where operator
+    {
+      preCanGoToNext: () => false,
+      validation: {
+        requireBefore: ['whitespace', 'comma'],
+        acceptTokens: [
+          { type: 'operator' },
+        ],
+      },
+      add: (token) => {
+        statement.where[statement.where.length - 1].operator = token.value;
+      },
+      postCanGoToNext: () => true,
+    },
+    // Where right
+    {
+      preCanGoToNext: () => false,
+      validation: {
+        requireBefore: ['whitespace', 'comma'],
+        acceptTokens: [
+          { type: 'number' },
+        ],
+      },
+      add: (token) => {
+        statement.where[statement.where.length - 1].right = token.value;
+      },
+      postCanGoToNext: () => false,
+    },
   ];
 
 

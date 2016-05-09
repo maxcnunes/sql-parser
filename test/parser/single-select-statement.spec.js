@@ -125,5 +125,45 @@ describe('parser', function () {
 
       expect(actual).to.eql(expected);
     });
+
+    it('parse select statement with WHERE clausule', function () {
+      const actual = parse('SELECT id FROM people WHERE id = 10');
+      const expected = {
+        type: 'QueryStatement',
+        start: 0,
+        end: 34,
+        body: [ // nodes
+          {
+            type: 'Select',
+            columns: [
+              { type: 'Column', name: 'id' },
+            ],
+            from: 'people',
+            where: [
+              { type: 'operator', left: 'id', operator: '=', right: '10' },
+            ],
+          },
+        ],
+        tokens: [
+          { type: 'keyword', value: 'SELECT', start: 0, end: 5 },
+          { type: 'whitespace', value: ' ', start: 6, end: 6 },
+          { type: 'identifier', value: 'id', start: 7, end: 8 },
+          { type: 'whitespace', value: ' ', start: 9, end: 9 },
+          { type: 'keyword', value: 'FROM', start: 10, end: 13 },
+          { type: 'whitespace', value: ' ', start: 14, end: 14 },
+          { type: 'identifier', value: 'people', start: 15, end: 20 },
+          { type: 'whitespace', value: ' ', start: 21, end: 21 },
+          { type: 'keyword', value: 'WHERE', start: 22, end: 26 },
+          { type: 'whitespace', value: ' ', start: 27, end: 27 },
+          { type: 'identifier', value: 'id', start: 28, end: 29 },
+          { type: 'whitespace', value: ' ', start: 30, end: 30 },
+          { type: 'operator', value: '=', start: 31, end: 31 },
+          { type: 'whitespace', value: ' ', start: 32, end: 32 },
+          { type: 'number', value: '10', start: 33, end: 34 },
+        ],
+      };
+
+      expect(actual).to.eql(expected);
+    });
   });
 });
