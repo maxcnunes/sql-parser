@@ -151,6 +151,15 @@ function createSelectStatementParser () {
     },
 
     addToken (token) {
+      if (statement.endStatement) {
+        throw new Error('This statement has already got to the end.');
+      }
+
+      if (token.type === 'semicolon') {
+        statement.endStatement = ';';
+        return;
+      }
+
       if (token.type === 'whitespace' || token.type === 'comma') {
         prevToken = token;
         return;
