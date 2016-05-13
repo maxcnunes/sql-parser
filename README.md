@@ -3,6 +3,7 @@ sql-parser
 
 **WIP**
 
+SQL-92 definition: http://savage.net.au/SQL/sql-92.bnf.html
 
 
 ```js
