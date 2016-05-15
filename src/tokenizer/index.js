@@ -18,18 +18,23 @@ const INDIVIDUALS = {
 };
 
 
-//
-// const statementKewords = [
-//   'SELECT',
-// ];
-
-
 export function scanToken (state) {
   const ch = read(state);
-  debugToken(state, ch);
 
   if (isWhitespace(ch)) {
     return scanWhitespace(state);
+  }
+
+  if (isCommentInline(ch, state)) {
+    return scanCommentInline(state);
+  }
+
+  if (isCommentBlock(ch, state)) {
+    return scanCommentBlock(state);
+  }
+
+  if (isString(ch, state)) {
+    return scanString(state);
   }
 
   if (isNumber(ch)) {
@@ -48,16 +53,23 @@ export function scanToken (state) {
   throw new Error(`Ilegal token "${ch}"`);
 }
 
+
 function read (state) {
+  if (state.position === state.input.length - 1) {
+    return null;
+  }
+
   state.position++;
-  const ch = state.input[state.position];
-  // state.value += ch;
-  return ch;
+  return state.input[state.position];
 }
 
+
 function unread (state) {
+  if (state.position === state.start) {
+    return;
+  }
+
   state.position--;
-  // state.value.split(0, -1);
 }
 
 
@@ -76,13 +88,13 @@ function resolveIndividualTokenType (ch) {
 
 
 function scanWhitespace (state) {
-  let nextChar = read(state);
+  let nextChar;
 
-  while (isWhitespace(nextChar)) {
+  do {
     nextChar = read(state);
-  }
+  } while (isWhitespace(nextChar));
 
-  if (!isWhitespace(nextChar)) {
+  if (nextChar !== null && !isWhitespace(nextChar)) {
     unread(state);
   }
 
@@ -96,14 +108,79 @@ function scanWhitespace (state) {
 }
 
 
-function scanWord (state) {
-  let nextChar = read(state);
+function scanCommentInline (state) {
+  let nextChar;
 
-  while (isLetter(nextChar)) {
+  do {
     nextChar = read(state);
+  } while (nextChar !== '\n' && nextChar !== null);
+
+  if (nextChar !== null && nextChar !== '\n') {
+    unread(state);
   }
 
-  if (!isLetter(nextChar)) {
+  const value = state.input.slice(state.start, state.position + 1);
+  return {
+    type: 'comment-inline',
+    value,
+    start: state.start,
+    end: state.start + value.length - 1,
+  };
+}
+
+
+function scanString (state) {
+  let nextChar;
+
+  do {
+    nextChar = read(state);
+  } while (nextChar !== '\'' && nextChar !== null);
+
+  if (nextChar !== null && nextChar !== '\'') {
+    unread(state);
+  }
+
+  const value = state.input.slice(state.start, state.position + 1);
+  return {
+    type: 'string',
+    value,
+    start: state.start,
+    end: state.start + value.length - 1,
+  };
+}
+
+
+function scanCommentBlock (state) {
+  let nextChar;
+  let prevChar;
+
+  do {
+    prevChar = nextChar;
+    nextChar = read(state);
+  } while ((prevChar + nextChar !== '*/') && nextChar !== null);
+
+  if (nextChar !== null && nextChar !== '/') {
+    unread(state);
+  }
+
+  const value = state.input.slice(state.start, state.position + 1);
+  return {
+    type: 'comment-block',
+    value,
+    start: state.start,
+    end: state.start + value.length - 1,
+  };
+}
+
+
+function scanWord (state) {
+  let nextChar;
+
+  do {
+    nextChar = read(state);
+  } while (isLetter(nextChar));
+
+  if (nextChar !== null && !isLetter(nextChar)) {
     unread(state);
   }
 
@@ -118,13 +195,13 @@ function scanWord (state) {
 
 
 function scanNumber (state) {
-  let nextChar = read(state);
+  let nextChar;
 
-  while (isNumber(nextChar)) {
+  do {
     nextChar = read(state);
-  }
+  } while (isNumber(nextChar) && nextChar !== null);
 
-  if (!isNumber(nextChar)) {
+  if (nextChar !== null && !isNumber(nextChar)) {
     unread(state);
   }
 
@@ -150,22 +227,47 @@ function scanIndividualCharacter (state) {
   };
 }
 
-// function skipChar () {
-//   state.position++;
-// }
-
-// function readWord () {
-//
-// }
-
-
-// function finishToken () {
-//
-// }
-
 
 function isWhitespace (ch) {
   return ch === ' ' || ch === '\t' || ch === '\n';
+}
+
+function isString (ch) {
+  return ch === '\'';
+}
+
+
+function isCommentInline (ch, state) {
+  let isComment = ch === '-';
+  if (!isComment) {
+    return false;
+  }
+
+  // lookahead
+  const nextChar = read(state);
+  isComment = nextChar === '-';
+  if (!isComment) {
+    unread(state);
+  }
+
+  return isComment;
+}
+
+
+function isCommentBlock (ch, state) {
+  let isComment = ch === '/';
+  if (!isComment) {
+    return false;
+  }
+
+  // lookahead
+  const nextChar = read(state);
+  isComment = nextChar === '*';
+  if (!isComment) {
+    unread(state);
+  }
+
+  return isComment;
 }
 
 
@@ -176,14 +278,4 @@ function isLetter (ch) {
 
 function isNumber (ch) {
   return ch >= '0' && ch <= '9';
-}
-
-
-function debugToken (state, ch) {
-  // temp helper function
-  console.log('>>scanToken input', state.input);
-  console.log('>>scanToken position', state.position);
-  console.log('>>scanToken ch value', ch);
-  console.log('>>scanToken ch code', ch.charCodeAt(0));
-  console.log('>>scanToken isWhitespace', isWhitespace(ch));
 }

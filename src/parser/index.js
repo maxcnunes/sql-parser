@@ -20,7 +20,6 @@ export function parse (input) {
   while (prevState.position < topLevelState.end) {
     const tokenState = initState({ prevState });
     const token = scanToken(tokenState);
-    // console.log('>>>\nscanToken', token);
 
     if (!statementParser) {
       // ignore white spaces between statements
@@ -57,8 +56,11 @@ export function parse (input) {
 
 
 function createStatementParserByToken (token) {
-  if (token.type === 'keyword' && token.value === 'SELECT') {
-    return createSelectStatementParser();
+  if (token.type === 'keyword') {
+    switch (token.value) {
+      case 'SELECT': return createSelectStatementParser();
+      default: break;
+    }
   }
 
   throw new Error('Invalid statement parser');
@@ -86,8 +88,6 @@ function initState ({ input, prevState }) {
 
 
 function createSelectStatementParser () {
-  let currentStepIndex = 0;
-  let prevToken;
   const statement = {
     type: 'Select',
     columns: [],
@@ -211,6 +211,13 @@ function createSelectStatementParser () {
     },
   ];
 
+  return stateMachineStatementParser(statement, steps);
+}
+
+
+function stateMachineStatementParser (statement, steps) {
+  let currentStepIndex = 0;
+  let prevToken;
 
   /* eslint arrow-body-style: 0, no-extra-parens: 0 */
   const isValidToken = (step, token) => {
@@ -240,6 +247,7 @@ function createSelectStatementParser () {
     },
 
     addToken (token) {
+      /* eslint no-param-reassign: 0 */
       if (statement.endStatement) {
         throw new Error('This statement has already got to the end.');
       }

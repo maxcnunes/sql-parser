@@ -11,6 +11,29 @@ describe('scan', function () {
     position: -1,
   });
 
+  it('scans inline comments', function () {
+    const actual = scanToken(initState('-- my comment'));
+    const expected = {
+      type: 'comment-inline',
+      value: '-- my comment',
+      start: 0,
+      end: 12,
+    };
+    expect(actual).to.eql(expected);
+  });
+
+  it('scans block comments', function () {
+    const commentBlock = '/*\n * This is my comment block\n */';
+    const actual = scanToken(initState(commentBlock));
+    const expected = {
+      type: 'comment-block',
+      value: commentBlock,
+      start: 0,
+      end: 33,
+    };
+    expect(actual).to.eql(expected);
+  });
+
   it('scans white spaces', function () {
     const actual = scanToken(initState('   \n\t  '));
     const expected = {
@@ -117,6 +140,17 @@ describe('scan', function () {
       value: '10',
       start: 0,
       end: 1,
+    };
+    expect(actual).to.eql(expected);
+  });
+
+  it('scans \'Hello World\' as string value', function () {
+    const actual = scanToken(initState('\'Hello World\''));
+    const expected = {
+      type: 'string',
+      value: '\'Hello World\'',
+      start: 0,
+      end: 12,
     };
     expect(actual).to.eql(expected);
   });
