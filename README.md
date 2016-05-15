@@ -2,6 +2,8 @@ sql-parser
 =========
 
 **WIP**
+[![Build Status](https://travis-ci.org/maxcnunes/sql-parser.svg?branch=master)](https://travis-ci.org/maxcnunes/sql-parser)
+
 
 SQL-92 definition: http://savage.net.au/SQL/sql-92.bnf.html
 
