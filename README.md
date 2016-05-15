@@ -1,15 +1,24 @@
 sql-parser
-=========
+==========
 
-**WIP**
 [![Build Status](https://travis-ci.org/maxcnunes/sql-parser.svg?branch=master)](https://travis-ci.org/maxcnunes/sql-parser)
 
 
+**IMPORTANT!**
+
+This is a modest attempt of writing a SQL parser in node. Even it being quite fun to implement. I guess I will not get it to the end.
+Because it would require some good free time that is out of my scope right now.
+
+## Reference for implementation
+
 SQL-92 definition: http://savage.net.au/SQL/sql-92.bnf.html
 
+## Usage
 
 ```js
-require('sql-parser').parse('SELECT * FROM mytable');
+var result = parse('SELECT * FROM mytable');
+
+console.log(result);
 
 { 
   type: 'QueryStatement',
@@ -33,3 +42,15 @@ require('sql-parser').parse('SELECT * FROM mytable');
   ] 
 }
 ```
+
+## Contributing
+
+It is required to use [editorconfig](http://editorconfig.org/) and please write and run specs before pushing any changes:
+
+```js
+npm test
+```
+
+## License
+
+Copyright (c) 2016 Max Claus Nunes. This software is licensed under the [MIT License](http://raw.github.com/maxcnunes/sql-parser/master/LICENSE).
